@@ -1,0 +1,142 @@
+import kotlin.math.PI
+import kotlin.math.sqrt
+
+fun main() {
+    //istanza per testare il codice
+   val squareCabin = SquareCabin(8, 40.5)
+   
+   println("\nSquare Cabin\n============")
+  /* println("has Room = ${squareCabin.hasRoom()}")
+   println("build material = ${squareCabin.buildingMaterial}")
+   println("capacity = ${squareCabin.capacity}")*/ 
+   
+   // per diminuire gli errori usare WITH + nome dell'istanza a cui tt i parametri fanno riferimento apri {} 
+   // e al loro interno scrivi le operazioni
+   with(squareCabin) {
+       println("has Room = ${hasRoom()}")
+       println("build material = ${buildingMaterial}")
+       println("capacity = ${capacity}")
+       println("Floor area = ${floorArea()}")
+       getRoom()
+   }
+      
+    //per la classe RoundHut
+    val roundHut = RoundHut(5, 30.10) 
+    
+    println("\nRound Hut\n============")
+    with(roundHut){
+       println("build material = ${buildingMaterial}")
+       println("capacity = ${capacity}")
+       println("Floor area = ${floorArea()}")
+       //x implemento delle persone che ci abitano
+       println("Has room? ${hasRoom()}")
+       getRoom()                             // xk funziona sia su roundHut e squareCabin? --> sotto classi dierette?
+       println("Has room? ${hasRoom()}")
+       getRoom()
+       //fine
+       println("Carpet Length: ${calculateMaxCarpetLength()}")
+    }
+    
+    
+     //per la classe RoundTower
+     val roundTower = RoundTower(8, 5, 30.10)
+     println("\nRound Tower\n============")
+     with(roundTower){
+       println("has Room = ${hasRoom()}")
+       println("build material = ${buildingMaterial}")
+       println("capacity = ${capacity}")
+       println("Floor area = ${floorArea()}")
+       println("Carpet Length: ${calculateMaxCarpetLength()}")
+     }
+     
+    
+   }
+
+
+abstract class Dwelling(/*accessibile solo da questa classe*/private var residents: Int){
+    abstract val buildingMaterial: String  // --> se le metto tra parentesi poi le devo dichiarare subito nella classe figlio
+    abstract val capacity: Int
+    
+    // funzione hasRoom()per determinare se c'è spazio per un altro residente nell'abitazione.
+    fun hasRoom(): Boolean{
+        //C'è spazio in a Dwellingse il numero di residentsè minore di capacitye la funzione dovrebbe 
+        //restituire trueo falsein base a questo confronto.
+        return residents < capacity
+    }
+    //CALCOLO AREA PAVIMENTO --> deve restituire un DOUBLE
+    abstract fun  floorArea(): Double
+    
+    //AUMENTARE IL NUM DI RSIDENTE SE C'è ANKR SPAZIO
+    
+    // getRoom()funzione che aumenta di uno il numero di residenti
+    //Utilizzare if un'istruzione che aggiunge un residente solo se è rimasta capacità.
+    //Stampa un messaggio per l'esito.
+    
+    fun getRoom(){
+        if(hasRoom()){
+            residents++
+            println("You got a room!")
+        }else{
+            println("Sorry, at capacity and no rooms left.")
+        }
+    }
+    
+}
+
+
+
+
+class SquareCabin(resident: Int, val length: Double): Dwelling(resident) /* --> voglio che la quantità di residenti possa variare*/{
+    //override
+    override val buildingMaterial = "Wood"
+    override val capacity = 6
+    
+    override fun floorArea(): Double{
+        return length * length
+    }
+}
+
+//Allo stesso modo di SquareCabin, aggiungi un'altra sottoclasse, RoundHut, a Dwelling.
+//Eseguire l' override buildingMateriale assegnargli un valore di "Straw".
+//Sovrascrivi capacitye impostalo su 4.
+
+//OPEN x rendere possibile l'ereditarietà tra RoundHut & RoundTower
+open class RoundHut(resident: Int, val radius: Double): Dwelling(resident){
+    override val buildingMaterial = "Straw"
+    override val capacity = 4
+    
+    override fun floorArea(): Double{
+        return radius * radius * PI
+    }
+    
+    //sapere quale lunghezza di un lato del tappeto ottenere per il tuo RoundHuto RoundTower.
+    // Inserisci la funzione --> calculateMaxCarpetLength() in RoundHut per renderla disponibile a tutte le abitazioni rotonde.
+    
+    fun calculateMaxCarpetLength(): Double{
+        return sqrt(2.0) * radius
+    }
+    
+}
+
+//Crea una RoundTowerclasse che sia una sottoclasse di RoundHut. Aggiungere il residents parametro al costruttore di RoundTower, 
+//quindi passare tale parametro al costruttore della RoundHut superclasse.
+//Sostituisci il buildingMaterialto be "Stone".
+//Imposta capacity su 4
+
+//AGGIUNGERE PIANI
+
+//aggiorna il RoundTowercostruttore per accettare un parametro intero aggiuntivo val floorsper il numero di piani. 
+//Mettilo dopo residents. Si noti che non è necessario passare questo al RoundHut costruttore genitore perché floors è 
+//definito qui RoundTowere RoundHut non ha floors
+
+class RoundTower(resident: Int, val floorsper: Int, radius: Double): RoundHut(resident, radius){
+    override val buildingMaterial = "Stone"
+    
+    // capacity deve essere uguale a HASrOOM * NUM FLOOR
+    
+    override fun floorArea(): Double{
+        //usare SUPER per richiamare la funz della classe genitore e non ripetere --> radius * radius * PI
+        return super.floorArea() * floorsper
+    }
+    
+}
